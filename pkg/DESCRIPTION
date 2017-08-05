@@ -1,0 +1,9 @@
+Package: hamurabi
+Title: Play and Analyse the Classic Computer Game `Hamurabi`
+Version: 0.0.0.9000
+Authors@R: person("Peter", "Ellis", email = "peter.ellis2013nz@gmail.com", role = c("aut", "cre"))
+Description: Play and analyse the classic computer game Hamurabi, which was first written in FOCAL in 1968 by Doug Dyment as The Sumer Game.  It was renamed Hamurabi (eight letters long so skipping one m usually used in referring to the historical personage) re-written in BASIC by David Ahl and included in his best-selling BASIC Computer Games, 1973.  This package lets you play the game and has some analytical helper functions.
+Depends: R (>= 3.1.2)
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
