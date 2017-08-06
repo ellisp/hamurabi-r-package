@@ -73,7 +73,7 @@ ham_inputs <- function(last_year, y = 0){
   }
   
   while(plant > last_year$state$people * 10){
-    message(paste("But you only have", last_year$state$people, "people to tend the field..."))
+    message(paste("But you only have", last_year$state$people, "people to tend the fields..."))
     plant <- .input()
   }        
   while(plant > bushels - feed){
@@ -93,7 +93,12 @@ ham_inputs <- function(last_year, y = 0){
   return(state)
 }
 
-
+#' Play the Hamurabi game
+#' 
+#' Human interface to play the Hamurabi city management game
+#' 
+#' @param years length of term
+#' @value None.  This function is called for its side effect of playing a game.
 hamurabi <- function(years = 10){
   starting_state <- list(
     state = list(acres_owned = 1000, acres_planted = 0, people =100, bushels_fed = 0, bushels_store = 2800),
@@ -121,6 +126,7 @@ hamurabi <- function(years = 10){
   ham_report(latest_state, y = years)
   
   av_prop_starved <- mean(prop_starved)
+  av_acres <- latest_state$state$acres_owned / latest_state$state$people
   
   
   mess <- "\n============================\n\nLet's sum up here.\n\n"
@@ -130,9 +136,29 @@ hamurabi <- function(years = 10){
   mess <- paste0(mess, "You started with ", 
                  round(starting_state$state$acres_owned / starting_state$state$people, 1),
                  " acres per person and ended with ",
-                 round(latest_state$state$acres_owned / latest_state$state$people, 1),
-                 " acres per person.")
+                 round(av_acres, 1),
+                 " acres per person.\n\n")
+  
+  if(av_prop_starved > 0.33 | av_acres < 7){
+    # dreadful
+    mess <- paste0(mess, "Due to this extreme mismanagement you have not only\nbeen impeached and thrown out of office but you have\nalso been declared 'National Fink'!!\n")
+  } else {
+    if (av_prop_starved > 0.1 | av_acres < 9){
+      # bad
+      mess <- paste0(mess, "Your heavy handed performance smacks of Nero and Ivan IV.\nThe people (remaining) find you an unpleasant ruler, and\nfrankly, hate your guts!\n")
+    } else {
+      if (av_prop_starved > 0.03 | av_acres < 10){
+        # mediocre
+        mess <- paste0(mess, "Your performance could have been somewhat better, but\nreally wasn't too bad at all.\n")
+        mess <- paste0(round(latest_state$state$population * runif(1)), " would dearly love to see you assassinated but we all have our little problems.")
+      } else {
+        # fantastic
+        mess <- paste0(mess, "A fantastic performance!!! Charlemagne, Disraeli and \nJefferson combined could not have done better!")
+      }
+    }
+  }
+
   cat(mess)
 }
 
-hamurabi(2)
+hamurabi(10)
