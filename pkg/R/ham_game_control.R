@@ -115,8 +115,8 @@ hamurabi <- function(years = 10){
     state = list(acres_owned = 1000, acres_planted = 0, people =100, bushels_fed = 0, bushels_store = 2800),
     changes = list(yield = 3, rats_eaten = 0, new_people = 5, starved = 0, plague_people = 0))
   
-  prop_starved <- numeric(years)
-  num_starved <- numeric(years)
+  prop_starved <- rep(NA, years)
+  num_starved <- rep(NA, years)
   
   #---------year 0------------
   ham_report(starting_state, y = 0)
@@ -125,7 +125,9 @@ hamurabi <- function(years = 10){
   num_starved[1] <- latest_state$changes$starved
   
   #---------years 1 to 9--------------
-  for(i in 1:(years - 1)){
+  i <- 0
+  while(i < (years - 1) & max(prop_starved, na.rm = TRUE) < 0.45){
+    i <- i + 1
     ham_report(latest_state, y = i)
     latest_state <- ham_year(ham_inputs(latest_state, y = i))
     prop_starved[i + 1] <- latest_state$changes$prop_starved
@@ -134,23 +136,23 @@ hamurabi <- function(years = 10){
   
   #----------final report----------
   # standard report on the last year:
-  ham_report(latest_state, y = years)
+  ham_report(latest_state, y = i + 1)
   
-  av_prop_starved <- mean(prop_starved)
+  av_prop_starved <- mean(prop_starved, na.rm = TRUE)
   av_acres <- latest_state$state$acres_owned / latest_state$state$people
   
   
   mess <- "\n============================\n\nLet's sum up here.\n\n"
-  mess <- paste0(mess, "In your ", years, "-year term of office, ", round(av_prop_starved * 100), 
+  mess <- paste0(mess, "In your ", i + 1, "-year term of office, ", round(av_prop_starved * 100), 
                  " percent of the population starved per year on average.\n")
-  mess <- paste0(mess, "That means, a total of ", sum(num_starved), " people died!\n\n")
+  mess <- paste0(mess, "That means, a total of ", sum(num_starved, na.rm = TRUE), " people died!\n\n")
   mess <- paste0(mess, "You started with ", 
                  round(starting_state$state$acres_owned / starting_state$state$people, 1),
                  " acres per person and ended with ",
                  round(av_acres, 1),
                  " acres per person.\n\n")
   
-  if(av_prop_starved > 0.33 | av_acres < 7){
+  if(av_prop_starved > 0.33 | av_acres < 7 | max(prop_starved) > 0.45){
     # dreadful
     mess <- paste0(mess, "Due to this extreme mismanagement you have not only\nbeen impeached and thrown out of office but you have\nalso been declared 'National Fink'!!\n")
   } else {
