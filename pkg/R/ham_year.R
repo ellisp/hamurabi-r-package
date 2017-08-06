@@ -1,8 +1,11 @@
-
-
+#' Modify the state of the city
+#' 
+#' Modify the state of the city for the Hamurabi game
+#' @export
+#' @importFrom stats runif
 #' @param state list representing the current state of the city, with elements 
 #' acres_owned, acres_planted, people, bushels_fed, bushels_store
-#' @value a new value of state
+#' @return a new value of state
 #' @details corresponds to the code starting at line 511 of the BASIC version
 ham_year <- function(state){
   # state <- list(acres_owned = 1000, acres_planted =500, people =100, bushels_fed =1800, bushels_store = 200)
@@ -47,7 +50,3 @@ ham_year <- function(state){
   return(list(state= state, changes = changes))
 }
 
-# test
-x <- ham_year(state)
-x$changes
-x$state
