@@ -7,6 +7,8 @@
 ham_year <- function(state){
   # state <- list(acres_owned = 1000, acres_planted =500, people =100, bushels_fed =1800, bushels_store = 200)
   # Harvest
+  orig_state <- state
+  
   yield <- sample(1:5, 1)
   harvest <- yield * state$acres_planted
   
@@ -39,6 +41,7 @@ ham_year <- function(state){
                   rats_eaten = rats_eaten, 
                   new_people = new_people, 
                   starved = starved,
+                  prop_starved = starved / orig_state$people,
                   plague_people = plague_people)
   
   return(list(state= state, changes = changes))
