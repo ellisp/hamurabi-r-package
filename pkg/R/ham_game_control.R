@@ -152,25 +152,61 @@ hamurabi <- function(years = 10){
                  round(av_acres, 1),
                  " acres per person.\n\n")
   
+  cat(mess)
+  
+  results <- ham_eval(prop_starved, 
+                      av_acres, 
+                      last_pop = latest_state$state$population)
+  cat(results$mess)
+  
+}
+
+
+#' Evaluate a turn or range of turns in the Hamurabi game
+#' 
+#' @export
+#' 
+#' @param prop_starved vector of at least one year's worth of proportion of people who starved
+#' @param av_acres acres per person at end of game or turn
+#' @param last_pop population at end of game or turn.  Only needed if you get state 3 "mediocre" and
+#' need to get a message of how many people would like to see you assassinated
+#' @return A list with two elements: "eval" is an integer from 1 (worst) to 4 (best) evaluating performance; 
+#' "mess" is a character string to be displayed explaining how well / badly you went.
+#' 
+#' @examples
+#' 
+#' ham_eval(0.01, 11)
+#' ham_eval(c(0.01, 0.05, 0, 0, 0.1), 11, last_pop = 75)
+#' ham_eval(c(0.01, 0.05, 0, 0, 0.1), 8)
+#' ham_eval(c(0.01, 0.05, 0, 0.5, 0.1), 11)
+
+ham_eval <- function(prop_starved, av_acres, last_pop = NULL){
+  
+  av_prop_starved <- mean(prop_starved, na.rm = TRUE)
+  
   if(av_prop_starved > 0.33 | av_acres < 7 | max(prop_starved) > 0.45){
     # dreadful
-    mess <- paste0(mess, "Due to this extreme mismanagement you have not only\nbeen impeached and thrown out of office but you have\nalso been declared 'National Fink'!!\n")
+    eval <- 1
+    mess <- paste0("Due to this extreme mismanagement you have not only\nbeen impeached and thrown out of office but you have\nalso been declared 'National Fink'!!\n")
   } else {
     if (av_prop_starved > 0.1 | av_acres < 9){
       # bad
-      mess <- paste0(mess, "Your heavy handed performance smacks of Nero and Ivan IV.\nThe people (remaining) find you an unpleasant ruler, and\nfrankly, hate your guts!\n")
+      eval <- 2
+      mess <- paste0("Your heavy handed performance smacks of Nero and Ivan IV.\nThe people (remaining) find you an unpleasant ruler, and\nfrankly, hate your guts!\n")
     } else {
       if (av_prop_starved > 0.03 | av_acres < 10){
         # mediocre
-        mess <- paste0(mess, "Your performance could have been somewhat better, but\nreally wasn't too bad at all.\n")
-        mess <- paste0(round(latest_state$state$population * runif(1)), " would dearly love to see you assassinated but we all have our little problems.")
+        eval <- 3
+        mess <- paste0("Your performance could have been somewhat better, but\nreally wasn't too bad at all.\n")
+        mess <- paste0(mess, round(last_pop * runif(1)), "people would dearly love to see you assassinated but we all have our little problems.")
       } else {
         # fantastic
-        mess <- paste0(mess, "A fantastic performance!!! Charlemagne, Disraeli and \nJefferson combined could not have done better!")
+        eval <- 4
+        mess <- paste0("A fantastic performance!!! Charlemagne, Disraeli and \nJefferson combined could not have done better!")
       }
     }
   }
-
-  cat(mess)
+  return(list(mess = mess, eval = eval))
 }
+
 
